@@ -98,14 +98,14 @@ pub fn ex03() {
     const CONST_MAX_NUM: usize = 20;
     println!("The const maximum number is {}", CONST_MAX_NUM);
 
-    static mut static_max_numbers: usize = 0;
+    static mut STATIC_NUM: usize = 0;
     // you could change static var in unsafe code
     unsafe {
-        println!("the static maximum number is {}", static_max_numbers);
+        println!("the static maximum number is {}", STATIC_NUM);
 
-        static_max_numbers += 30;
+        STATIC_NUM += 30;
 
-        println!("the static maximum number is {}", static_max_numbers);
+        println!("the static maximum number is {}", STATIC_NUM);
     }
 
 }
