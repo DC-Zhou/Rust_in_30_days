@@ -160,6 +160,62 @@ pub fn ex06(){
     let does_nothing = does_nothing(number);
 }
 
+// Arc
+use std::sync::{Arc, Mutex};
+use std::thread::spawn;
+
+fn make_arc(number: i32) -> Arc<Mutex<i32>> {
+    Arc::new(Mutex::new(number))
+}
+
+fn new_clone(input: &Arc<Mutex<i32>>) -> Arc<Mutex<i32>> {
+    Arc::clone(&input)
+}
+
+pub fn ex07() {
+    let mut  handle_vec = vec![];
+    let my_number = make_arc(0);
+
+    for _ in 0..10 {
+        let my_number_clone = new_clone(&my_number);
+        let handle = spawn(move || {
+            for _ in 0..10 {
+                let mut value_inside = my_number_clone.lock().unwrap();
+                *value_inside += 1;
+            }
+        });
+        handle_vec.push(handle);
+    }
+    handle_vec.into_iter().for_each(|handle| handle.join().unwrap());
+    println!("{my_number:?}");
+
+}
+
+// channel
+use std::sync::mpsc::channel;
+
+pub fn ex08() {
+    let (sender, receiver) = channel();
+
+    let sender_clone = sender.clone();
+
+    std::thread::spawn( move || {
+        sender.send("Send a &str this time").unwrap();
+        sender.send("Send a &str this time").unwrap();
+    });
+
+    std::thread::spawn( move || {
+        sender_clone.send("And Here is another &str").unwrap();
+        sender_clone.send("And Here is another &str").unwrap();
+    });
+
+    while let Ok(res) = receiver.recv() {
+        println!("{res}");
+    }
+}
+
+
+
 fn main() {
     println!("Hello, More Closure!");
     ex01();
@@ -168,4 +224,6 @@ fn main() {
     ex04();
     ex05();
     ex06();
+    ex07();
+    ex08();
 }
